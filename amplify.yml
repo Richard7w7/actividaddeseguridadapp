@@ -1,0 +1,40 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Instalando dependencias..."
+        - yarn install  # o npm install
+    build:
+      commands:
+        - echo "Ejecutando pruebas automatizadas..."
+        - yarn test  # o npm test para ejecutar pruebas
+        - echo "Realizando escaneo de vulnerabilidades..."
+        - yarn audit || true  # Escaneo de vulnerabilidades con yarn, npm audit también puede funcionar
+        - echo "Construyendo la aplicación..."
+        - yarn build  # o npm run build para construir la aplicación
+  artifacts:
+    baseDirectory: build  # Directorio base donde se genera el build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+  test:
+    phases:
+      preTest:
+        commands:
+          - echo "Iniciando pruebas en el entorno de pruebas..."
+      test:
+        commands:
+          - echo "Ejecutando pruebas en el entorno de pruebas..."
+          - yarn test --env=ci  # O el comando necesario para ejecutar las pruebas en tu entorno
+  deploy:
+    phases:
+      preDeploy:
+        commands:
+          - echo "Preparando el entorno de pruebas..."
+      deploy:
+        commands:
+          - echo "Desplegando aplicación en el entorno de pruebas..."
+          - amplify publish --environment test  # Asegúrate de tener configurado el entorno de pruebas en Amplify
